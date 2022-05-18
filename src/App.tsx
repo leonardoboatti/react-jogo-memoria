@@ -28,6 +28,47 @@ const App = () => {
     }, 1000);
     return () => clearInterval(timer);
   },[playing, timeElapsed]);
+
+  //verificar se os abertos sao iguais
+  useEffect(() => {
+    if(shownCount === 2){
+      let opened = gridItems.filter(item => item.shown === true);
+      if(opened.length === 2){
+        
+        //se eles sao iguais = exibe o tempo todo 
+        if(opened[0].item === opened[1].item){          
+          let tmpGrid = [...gridItems];
+            for(let i in tmpGrid){
+              if(tmpGrid[i].shown){
+                tmpGrid[i].permanentShown = true;
+                tmpGrid[i].shown = false;
+              }
+            }            
+            setGridItems(tmpGrid);
+            setShownCount(0);  
+        }else{
+          //se nao for igual = fecha   
+          setTimeout(()=> {
+            let tmpGrid = [...gridItems];       
+            for(let i in tmpGrid){
+              tmpGrid[i].shown = false;
+            }  
+            setGridItems(tmpGrid);
+            setShownCount(0); 
+          }, 1000);       
+        }
+
+        setMoveCount(moveCount => moveCount + 1);
+      }
+    }
+  }, [shownCount, gridItems]);
+
+  //verificar se o jogo terminou
+  useEffect(()=>{
+    if(moveCount > 0 && gridItems.every(item => item.permanentShown === true)){
+      setPlaying(false);
+    }
+  }, [moveCount, gridItems]);
   
   const resetAndCreateGrid =()=>{
     // resetar o jogo
@@ -65,19 +106,27 @@ const App = () => {
   }
 
   const handleItemClick = (index: number) => {
+    if(playing && index !== null && shownCount < 2){
+      let  tmpGrid = [...gridItems];
 
+      if(tmpGrid[index].permanentShown === false && tmpGrid[index].shown === false){
+        tmpGrid[index].shown = true;
+        setShownCount(shownCount + 1);
+      }
+
+      setGridItems(tmpGrid);
+    }
   }
   
   return (
     <C.Container>
       <C.Info>
-        <C.LogoLink href="">
-          <img src={logoImage} width="200" alt=''/>
-        </C.LogoLink>
+        
+        <C.TitleInfo>Jogo da Memória</C.TitleInfo>
 
         <C.InfoArea>
           <InfoItem label='Tempo' value={formatTimeElapsed(timeElapsed)}/>
-          <InfoItem label='Movimentos' value='0'/>
+          <InfoItem label='Movimentos' value={moveCount.toString()}/>
         </C.InfoArea>
 
         <Button label='Reiniciar' icon={RestartIcon} onClick={resetAndCreateGrid}/>

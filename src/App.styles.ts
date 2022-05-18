@@ -27,6 +27,10 @@ export const LogoLink = styled.a`
     display: block;
 `;
 
+export const TitleInfo = styled.h1`
+    display: block;
+`;
+
 export const InfoArea = styled.div`
     width: 100%;
     margin: 10px 0;
@@ -56,7 +60,6 @@ export const Grid = styled.div`
     gap: 10px;
 
     @media(max-width: 750px){
-        justify-content: center;
-        amrgin: 0 20px;
+        grid-template-columns: repeat(3, 1fr);
     }
 `;
